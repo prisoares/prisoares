@@ -1,13 +1,11 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {
-  HomeScreen,
-  MapScreen,
-  SportsScreen,
-  HistoryScreen,
-  ProfileScreen,
-} from '../screens/tabs';
+import { HomeScreen } from '../screens/HomeScreen';
+import { MapScreen } from '../screens/MapScreen';
+import { SportsScreen } from '../screens/SportsScreen';
+import { HistoryScreen } from '../screens/HistoryScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme';
 import type { MainTabParamList } from './types';
 
@@ -15,7 +13,13 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   return (
-    <Text style={{ fontSize: 11, fontWeight: focused ? '800' : '500', color: focused ? colors.teal : colors.muted }}>
+    <Text
+      style={{
+        fontSize: 11,
+        fontWeight: focused ? '800' : '500',
+        color: focused ? colors.teal : colors.muted,
+      }}
+    >
       {label[0]}
     </Text>
   );
@@ -43,21 +47,27 @@ export function MainTabs() {
         component={HomeScreen}
         options={{
           title: 'Início',
-          tabBarIcon: ({ focused }) => <TabIcon label="Início" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Início" focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
         name="Mapa"
         component={MapScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon label="Mapa" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Mapa" focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
         name="Esportes"
         component={SportsScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon label="Esportes" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Esportes" focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
@@ -65,14 +75,18 @@ export function MainTabs() {
         component={HistoryScreen}
         options={{
           title: 'Histórico',
-          tabBarIcon: ({ focused }) => <TabIcon label="Histórico" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Histórico" focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
         name="Perfil"
         component={ProfileScreen}
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon label="Perfil" focused={focused} />,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon label="Perfil" focused={focused} />
+          ),
         }}
       />
     </Tab.Navigator>

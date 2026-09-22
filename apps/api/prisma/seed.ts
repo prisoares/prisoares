@@ -1,11 +1,10 @@
 import { PrismaClient, AccountRole } from '@prisma/client';
-import { createHash } from 'crypto';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-function hashPassword(plain: string): string {
-  // Phase 0 stub — replace with bcrypt in auth phase
-  return createHash('sha256').update(`ludi:${plain}`).digest('hex');
+async function hashPassword(plain: string): Promise<string> {
+  return bcrypt.hash(plain, 10);
 }
 
 async function main() {
@@ -33,13 +32,16 @@ async function main() {
   const futevolei = sports.find((s) => s.slug === 'futevolei')!;
   const beach = sports.find((s) => s.slug === 'beach-tennis')!;
 
+  const partnerHash = await hashPassword('ludi123');
+  const playerHash = await hashPassword('ludi123');
+
   const partner = await prisma.user.create({
     data: {
       email: 'parceiro@planetball.com.br',
       name: 'Parceiro Planetball',
-      cpf: '52998224725', // valid CPF checksum for seed
+      cpf: '52998224725',
       phone: '51999990001',
-      passwordHash: hashPassword('ludi123'),
+      passwordHash: partnerHash,
       roles: [AccountRole.USER, AccountRole.PARTNER],
       activeRole: AccountRole.PARTNER,
     },
@@ -51,7 +53,7 @@ async function main() {
       name: 'Jogador Demo',
       cpf: '39053344705',
       phone: '51999990002',
-      passwordHash: hashPassword('ludi123'),
+      passwordHash: playerHash,
       roles: [AccountRole.USER],
       activeRole: AccountRole.USER,
     },
@@ -143,6 +145,7 @@ async function main() {
       photoUrls: [
         'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800',
       ],
+      ownerId: partner.id,
       courts: {
         create: [
           {

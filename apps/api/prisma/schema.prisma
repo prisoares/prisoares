@@ -121,8 +121,11 @@ model Booking {
   startsAt        DateTime
   endsAt          DateTime
   holdExpiresAt   DateTime?
+  paymentDueAt    DateTime?
   priceCents      Int
   commissionCents Int           @default(0)
+  cancelledAt     DateTime?
+  cancelReason    String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -130,10 +133,12 @@ model Booking {
 
   @@index([status])
   @@index([venueId, startsAt])
+  @@index([courtId, startsAt, endsAt])
   @@index([userId])
+  @@index([partnerId, status])
 }
 
-/// Payment stub — Asaas Pix wired in later phases.
+/// Asaas Pix — stub when ASAAS_API_KEY empty; webhook marks paid.
 model Payment {
   id              String        @id @default(cuid())
   bookingId       String        @unique
@@ -141,10 +146,14 @@ model Payment {
   status          PaymentStatus @default(stub)
   method          PaymentMethod @default(PIX)
   amountCents     Int
+  refundCents     Int           @default(0)
   asaasChargeId   String?
   pixCopyPaste    String?
   pixQrCodeBase64 String?
   paidAt          DateTime?
+  refundedAt      DateTime?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
+  @@index([asaasChargeId])
 }

@@ -19,8 +19,11 @@ async function bootstrap() {
 
   const swagger = new DocumentBuilder()
     .setTitle('LUDI API')
-    .setDescription('Marketplace de reserva de quadras — Porto Alegre (pt-BR)')
-    .setVersion('0.1.0')
+    .setDescription(
+      'Marketplace de reserva de quadras — Porto Alegre (pt-BR). Fase 1: auth CPF, hold 15 min, Pix Asaas.',
+    )
+    .setVersion('0.2.0')
+    .addBearerAuth()
     .build();
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
 
