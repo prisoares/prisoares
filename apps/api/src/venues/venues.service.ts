@@ -5,11 +5,11 @@ import { PrismaService } from '../prisma/prisma.service';
 export class VenuesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(sportSlug?: string) {
+  async findAll(sportSlug?: string, city?: string) {
     const venues = await this.prisma.venue.findMany({
       where: {
         active: true,
-        city: 'Porto Alegre',
+        city: city ?? 'Porto Alegre',
         ...(sportSlug
           ? { courts: { some: { sport: { slug: sportSlug }, active: true } } }
           : {}),

@@ -10,7 +10,8 @@ export class VenuesController {
   @Get()
   @ApiOperation({ summary: 'Lista locais em Porto Alegre' })
   @ApiQuery({ name: 'sport', required: false, description: 'slug do esporte' })
-  findAll(@Query('sport') sport?: string) {
+  findAll(@Query('sport') sport?: string,
+    @Query('city') city?: string) {
     return this.venuesService.findAll(sport);
   }
 

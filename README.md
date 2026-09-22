@@ -16,6 +16,7 @@ Monorepo Turborepo:
 |---------------|--------|
 | `apps/mobile` | Expo (React Native) + TypeScript |
 | `apps/api` | NestJS + Prisma + PostgreSQL |
+| `apps/partner-web` | Next.js App Router — painel do parceiro |
 | `packages/shared` | Tipos e constantes de domínio compartilhados |
 
 ## Decisões de MVP (resumo)
@@ -116,6 +117,7 @@ Job de expiração: a cada minuto libera holds vencidos (`hold_15m` + `holdExpir
 
 ```bash
 npm run dev -w @ludi/mobile
+npm run dev -w @ludi/partner-web   # http://localhost:3001
 ```
 
 Telas Fase 1: login/cadastro CPF → JWT, esportes da API, detalhe do venue → solicitar reserva, histórico com status + pagar Pix (stub), mapa com lat/lng, perfil com troca de papel, inbox parceiro aceitar/recusar.

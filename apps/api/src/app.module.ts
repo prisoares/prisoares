@@ -10,6 +10,11 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingModule } from './booking/booking.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { PartnerModule } from './partner/partner.module';
+import { BillingModule } from './billing/billing.module';
+import { ChatModule } from './chat/chat.module';
+import { PushModule } from './push/push.module';
+import { CitiesModule } from './cities/cities.module';
 
 @Module({
   imports: [
@@ -24,6 +29,11 @@ import { InventoryModule } from './inventory/inventory.module';
     BookingModule,
     PaymentsModule,
     NotificationsModule,
+    PartnerModule,
+    BillingModule,
+    ChatModule,
+    PushModule,
+    CitiesModule,
   ],
 })
 export class AppModule {}

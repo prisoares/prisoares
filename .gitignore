@@ -44,3 +44,7 @@ apps/mobile/android/
 
 # Coverage
 coverage/
+
+# Next.js
+apps/partner-web/.next/
+**/.next/
