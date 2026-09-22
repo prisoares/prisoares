@@ -99,9 +99,9 @@ export class BookingService {
             const partner = await this.prisma.user.findUnique({
               where: { id: court.venue.ownerId },
             });
-            if (partner?.phone) {
+            if (partner) {
               await this.notifications.sendWhatsApp({
-                to: partner.phone,
+                to: partner.phone ?? '',
                 template: 'booking_request',
                 variables: {
                   venue: court.venue.name,
@@ -109,6 +109,14 @@ export class BookingService {
                   startsAt: startsAt.toISOString(),
                 },
               });
+              if (partner.email) {
+                await this.notifications.sendEmail({
+                  to: partner.email,
+                  subject: 'LUDI — Nova solicitação de reserva',
+                  body: `Hold 15 min: ${court.venue.name} / ${court.name} @ ${startsAt.toISOString()}`,
+                  template: 'booking_request',
+                });
+              }
             }
           }
 
@@ -174,9 +182,19 @@ export class BookingService {
       });
     });
 
-    await this.notifications.sendWhatsApp({
-      to: user.phone ?? '',
-      template: 'payment_pending',
+    await this.notifications.notifyBooking({
+      event: 'partner_accepted',
+      email: user.email,
+      phone: user.phone,
+      variables: {
+        bookingId: booking.id,
+        amount: (booking.priceCents / 100).toFixed(2),
+      },
+    });
+    await this.notifications.notifyBooking({
+      event: 'payment_pending',
+      email: user.email,
+      phone: user.phone,
       variables: {
         bookingId: booking.id,
         amount: (booking.priceCents / 100).toFixed(2),
@@ -331,9 +349,10 @@ export class BookingService {
       });
     });
 
-    await this.notifications.sendWhatsApp({
-      to: booking.user.phone ?? '',
-      template: 'booking_confirmed',
+    await this.notifications.notifyBooking({
+      event: 'confirmed',
+      email: booking.user.email,
+      phone: booking.user.phone,
       variables: { bookingId },
     });
 
@@ -343,7 +362,7 @@ export class BookingService {
   async cancel(userId: string, bookingId: string, reason?: string) {
     const booking = await this.prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { payment: true },
+      include: { payment: true, user: true },
     });
     if (!booking) throw new NotFoundException('Reserva não encontrada');
     if (booking.userId !== userId) throw new ForbiddenException();
@@ -387,6 +406,16 @@ export class BookingService {
         },
         include: this.includeRelations(),
       });
+    });
+
+    await this.notifications.notifyBooking({
+      event: 'cancelled',
+      email: booking.user.email,
+      phone: booking.user.phone,
+      variables: {
+        bookingId,
+        reason: reason ?? policy.description,
+      },
     });
 
     return { booking: this.toDto(updated), policy };

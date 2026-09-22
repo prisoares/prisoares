@@ -8,10 +8,53 @@ export class VenuesController {
   constructor(private readonly venuesService: VenuesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Lista locais em Porto Alegre' })
-  @ApiQuery({ name: 'sport', required: false, description: 'slug do esporte' })
-  findAll(@Query('sport') sport?: string) {
-    return this.venuesService.findAll(sport);
+  @ApiOperation({
+    summary: 'Lista locais em Porto Alegre (filtros: esporte, horário livre, distância)',
+  })
+  @ApiQuery({ name: 'sport', required: false })
+  @ApiQuery({ name: 'freeAt', required: false, description: 'ISO datetime' })
+  @ApiQuery({ name: 'lat', required: false })
+  @ApiQuery({ name: 'lng', required: false })
+  @ApiQuery({ name: 'radiusKm', required: false })
+  findAll(
+    @Query('sport') sport?: string,
+    @Query('freeAt') freeAt?: string,
+    @Query('lat') lat?: string,
+    @Query('lng') lng?: string,
+    @Query('radiusKm') radiusKm?: string,
+  ) {
+    return this.venuesService.findAll({
+      sport,
+      freeAt,
+      lat: lat != null && lat !== '' ? Number(lat) : undefined,
+      lng: lng != null && lng !== '' ? Number(lng) : undefined,
+      radiusKm:
+        radiusKm != null && radiusKm !== '' ? Number(radiusKm) : undefined,
+    });
+  }
+
+  @Get('map/pins')
+  @ApiOperation({ summary: 'Pins do mapa (cache offline no app)' })
+  @ApiQuery({ name: 'sport', required: false })
+  @ApiQuery({ name: 'freeAt', required: false })
+  @ApiQuery({ name: 'lat', required: false })
+  @ApiQuery({ name: 'lng', required: false })
+  @ApiQuery({ name: 'radiusKm', required: false })
+  mapPins(
+    @Query('sport') sport?: string,
+    @Query('freeAt') freeAt?: string,
+    @Query('lat') lat?: string,
+    @Query('lng') lng?: string,
+    @Query('radiusKm') radiusKm?: string,
+  ) {
+    return this.venuesService.mapPins({
+      sport,
+      freeAt,
+      lat: lat != null && lat !== '' ? Number(lat) : undefined,
+      lng: lng != null && lng !== '' ? Number(lng) : undefined,
+      radiusKm:
+        radiusKm != null && radiusKm !== '' ? Number(radiusKm) : undefined,
+    });
   }
 
   @Get(':slug')

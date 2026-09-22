@@ -12,6 +12,9 @@ async function main() {
 
   await prisma.payment.deleteMany();
   await prisma.booking.deleteMany();
+  await prisma.courtBlock.deleteMany();
+  await prisma.courtWeeklyAvailability.deleteMany();
+  await prisma.mapFeeInvoice.deleteMany();
   await prisma.court.deleteMany();
   await prisma.venue.deleteMany();
   await prisma.sport.deleteMany();
@@ -163,6 +166,20 @@ async function main() {
     venues: [planetball.name, arenaMoinhos.name, quadraBotanico.name],
     users: [partner.email, player.email],
   });
+
+  // Default weekly availability Mon–Sun 08:00–22:00 for all courts
+  const allCourts = await prisma.court.findMany();
+  for (const court of allCourts) {
+    await prisma.courtWeeklyAvailability.createMany({
+      data: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
+        courtId: court.id,
+        dayOfWeek,
+        startMin: 8 * 60,
+        endMin: 22 * 60,
+      })),
+    });
+  }
+  console.log('Weekly availability seeded for', allCourts.length, 'courts');
 }
 
 main()

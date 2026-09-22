@@ -35,6 +35,13 @@ enum PaymentMethod {
   PIX
 }
 
+enum MapFeeStatus {
+  pending
+  paid
+  overdue
+  stub
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -77,16 +84,20 @@ model Venue {
   lng          Float
   photoUrls    String[]
   active       Boolean  @default(true)
+  /// Visible on public map; set false when map-fee unpaid past due.
+  mapVisible   Boolean  @default(true)
   ownerId      String?
   owner        User?    @relation("VenueOwner", fields: [ownerId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  courts   Court[]
-  bookings Booking[]
+  courts         Court[]
+  bookings       Booking[]
+  mapFeeInvoices MapFeeInvoice[]
 
   @@index([city, state])
   @@index([lat, lng])
+  @@index([mapVisible, active])
 }
 
 model Court {
@@ -101,10 +112,60 @@ model Court {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  bookings Booking[]
+  bookings            Booking[]
+  weeklyAvailability  CourtWeeklyAvailability[]
+  blocks              CourtBlock[]
 
   @@index([venueId])
   @@index([sportId])
+}
+
+/// Weekly open window per weekday (0=Sun … 6=Sat). Minutes from midnight.
+model CourtWeeklyAvailability {
+  id        String   @id @default(cuid())
+  courtId   String
+  court     Court    @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  startMin  Int
+  endMin    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courtId, dayOfWeek])
+  @@index([courtId])
+}
+
+model CourtBlock {
+  id        String   @id @default(cuid())
+  courtId   String
+  court     Court    @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  startsAt  DateTime
+  endsAt    DateTime
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([courtId, startsAt, endsAt])
+}
+
+/// Monthly 1% GMV map listing fee (prior-month paid bookings).
+model MapFeeInvoice {
+  id            String       @id @default(cuid())
+  venueId       String
+  venue         Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  year          Int
+  month         Int
+  gmvCents      Int
+  feeCents      Int
+  status        MapFeeStatus @default(pending)
+  dueAt         DateTime
+  paidAt        DateTime?
+  asaasChargeId String?
+  pixCopyPaste  String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([venueId, year, month])
+  @@index([status, dueAt])
 }
 
 model Booking {

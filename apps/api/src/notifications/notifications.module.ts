@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import {
   NotificationsProvider,
-  WhatsApp360DialogStub,
+  LudiNotificationsStub,
 } from './notifications.provider';
 
 @Module({
   providers: [
-    { provide: NotificationsProvider, useClass: WhatsApp360DialogStub },
+    { provide: NotificationsProvider, useClass: LudiNotificationsStub },
   ],
   exports: [NotificationsProvider],
 })
