@@ -1,8 +1,12 @@
-import { Module } from '@nestjs/common';
-import { AsaasPaymentsStub, PaymentsProvider } from './payments.provider';
+import { Module, forwardRef } from '@nestjs/common';
+import { AsaasPaymentsProvider, PaymentsProvider } from './payments.provider';
+import { PaymentsController } from './payments.controller';
+import { BookingModule } from '../booking/booking.module';
 
 @Module({
-  providers: [{ provide: PaymentsProvider, useClass: AsaasPaymentsStub }],
+  imports: [forwardRef(() => BookingModule)],
+  controllers: [PaymentsController],
+  providers: [{ provide: PaymentsProvider, useClass: AsaasPaymentsProvider }],
   exports: [PaymentsProvider],
 })
 export class PaymentsModule {}

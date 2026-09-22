@@ -22,6 +22,11 @@ export const PAYMENT_DEADLINE_HOURS_BEFORE = 24;
 export const COMMISSION_RATE = 0.05;
 export const MONTHLY_MAP_FEE_GMV_RATE = 0.01;
 
+/** Cancel / refund policy. */
+export const CANCEL_FULL_REFUND_HOURS = 24;
+export const LATE_CANCEL_PENALTY_RATE = 0.45;
+export const LATE_CANCEL_REFUND_RATE = 0.55;
+
 export type AccountRole = 'user' | 'partner';
 
 export const CITY = {
@@ -75,4 +80,46 @@ export interface CourtDto {
   name: string;
   sportSlug: string;
   priceCents: number;
+}
+
+export interface BookingDto {
+  id: string;
+  status: BookingStatus;
+  venueName: string;
+  courtName: string;
+  startsAt: string;
+  endsAt: string;
+  holdExpiresAt?: string | null;
+  paymentDueAt?: string | null;
+  priceCents: number;
+  commissionCents: number;
+  payment?: {
+    status: string;
+    pixCopyPaste?: string | null;
+    amountCents: number;
+  } | null;
+}
+
+export function commissionCentsFromPrice(priceCents: number): number {
+  return Math.round(priceCents * COMMISSION_RATE);
+}
+
+export function paymentDueAtFromStart(startsAt: Date): Date {
+  return new Date(
+    startsAt.getTime() - PAYMENT_DEADLINE_HOURS_BEFORE * 60 * 60 * 1000,
+  );
+}
+
+/**
+ * Refund amount after cancel/no-show given paid amount and hours until start.
+ * No-show: 0. Cancel ≥24h: 100%. Cancel <24h: 55%.
+ */
+export function refundCentsForCancel(params: {
+  paidCents: number;
+  hoursUntilStart: number;
+  kind: 'cancel' | 'no_show';
+}): number {
+  if (params.kind === 'no_show') return 0;
+  if (params.hoursUntilStart >= CANCEL_FULL_REFUND_HOURS) return params.paidCents;
+  return Math.round(params.paidCents * LATE_CANCEL_REFUND_RATE);
 }
