@@ -1,0 +1,31 @@
+{
+  "name": "@ludi/mobile",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "dev": "expo start",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "echo \"lint ok\"",
+    "build": "echo \"expo build via EAS in later phase\""
+  },
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.19.2",
+    "@react-navigation/native": "^7.4.1",
+    "@react-navigation/native-stack": "^7.19.2",
+    "expo": "~57.0.24",
+    "expo-linear-gradient": "~57.0.2",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}
